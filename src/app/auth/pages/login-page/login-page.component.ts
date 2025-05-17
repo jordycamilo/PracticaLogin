@@ -25,29 +25,26 @@ export class LoginPageComponent {
 
   onSubmit() {
     if (this.loginForm.invalid) {
-       
-        this.hasError.set(true);
-        setTimeout(() => {this.hasError.set(false)} , 2000);
-   
+      this.showErrorTemporarily();
       return;
     }
 
-    const { email = '', password ='' } = this.loginForm.value;
-    if (this.isBrowser) {
-      this.authService.login(email!, password!).subscribe(isAuthenticated => {
+    const email = this.loginForm.get('email')?.value ?? '';
+    const password = this.loginForm.get('password')?.value ?? '';
 
-        if (isAuthenticated) {
-         alert('Login successful');
-         return
-        }
-        this.hasError.set(true);
-        setTimeout(() => {this.hasError.set(false)}, 2000);
-      
-      return;
-         
+    if (!this.isBrowser) return;
 
+    this.authService.login(email, password).subscribe((isAuthenticated) => {
+      if (isAuthenticated) {
+        alert('Login successful');
+      } else {
+        this.showErrorTemporarily();
+      }
     });
-    
   }
-}
+
+  private showErrorTemporarily() {
+    this.hasError.set(true);
+    setTimeout(() => this.hasError.set(false), 2000);
+  }
 }
